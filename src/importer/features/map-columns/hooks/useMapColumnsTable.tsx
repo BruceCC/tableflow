@@ -43,14 +43,23 @@ export default function useMapColumnsTable(
       const matchedSuggestedTemplateColumn = templateColumns?.find((tc) => isSuggestedMapping(tc, uc.name));
 
       if (matchedSuggestedTemplateColumn && matchedSuggestedTemplateColumn.key) {
-        usedTemplateColumns.add(matchedSuggestedTemplateColumn.key);
-        acc[uc.index] = { key: matchedSuggestedTemplateColumn.key, include: true };
+        // Allow multiple mappings for columns with multiple: true
+        if (!matchedSuggestedTemplateColumn.multiple) {
+          usedTemplateColumns.add(matchedSuggestedTemplateColumn.key);
+        }
+        acc[uc.index] = { 
+          key: matchedSuggestedTemplateColumn.key, 
+          include: true, 
+          isMultiple: matchedSuggestedTemplateColumn.multiple 
+        };
         return acc;
       }
 
       const similarTemplateColumn = templateColumns?.find((tc) => {
-        if (tc.key && !usedTemplateColumns.has(tc.key) && checkSimilarity(tc.key, uc.name)) {
-          usedTemplateColumns.add(tc.key);
+        if (tc.key && (!usedTemplateColumns.has(tc.key) || tc.multiple) && checkSimilarity(tc.key, uc.name)) {
+          if (!tc.multiple) {
+            usedTemplateColumns.add(tc.key);
+          }
           return true;
         }
         return false;
@@ -60,6 +69,7 @@ export default function useMapColumnsTable(
         key: similarTemplateColumn?.key || "",
         include: !!similarTemplateColumn?.key,
         selected: !!similarTemplateColumn?.key,
+        isMultiple: similarTemplateColumn?.multiple,
       };
       return acc;
     }, initialObject);
@@ -70,13 +80,23 @@ export default function useMapColumnsTable(
   );
 
   const templateFields: { [key: string]: InputOption } = useMemo(
-    () => templateColumns.reduce((acc, tc) => ({ ...acc, [tc.name]: { value: tc.key, required: tc.required } }), {}),
+    () => templateColumns.reduce((acc, tc) => ({ ...acc, [tc.name]: { value: tc.key, required: tc.required, multiple: tc.multiple } }), {}),
     [JSON.stringify(templateColumns)]
   );
 
   const handleTemplateChange = (uploadColumnIndex: number, key: string) => {
     setValues((prev) => {
-      const templatesFields = { ...prev, [uploadColumnIndex]: { ...prev[uploadColumnIndex], key: key, include: !!key, selected: !!key } };
+      const selectedTemplateColumn = templateColumns.find(tc => tc.key === key);
+      const templatesFields = { 
+        ...prev, 
+        [uploadColumnIndex]: { 
+          ...prev[uploadColumnIndex], 
+          key: key, 
+          include: !!key, 
+          selected: !!key,
+          isMultiple: selectedTemplateColumn?.multiple 
+        } 
+      };
       const templateFieldsObj = Object.values(templatesFields).map(({ key, selected }) => ({ key, selected }));
       setSelectedValues(templateFieldsObj);
       return templatesFields;

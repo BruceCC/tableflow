@@ -43,7 +43,8 @@ export default function DropdownFields({ options, value, placeholder, onChange, 
     for (const key in options) {
       const option = options[key];
       const isSelected = selectedValues.some((item) => item.key === option?.value && item.selected && option.value !== value);
-      if (!isSelected) {
+      // Allow multiple selections for columns with multiple: true
+      if (!isSelected || option?.multiple) {
         newFilteredOptions[key] = option;
       }
     }
