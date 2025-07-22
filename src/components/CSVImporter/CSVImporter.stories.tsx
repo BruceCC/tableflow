@@ -35,6 +35,11 @@ const template = {
       required: true,
       description: "The email of the user",
     },
+    {
+      name: "Category",
+      multiple: true,
+      combiner: (values: string[]) => values.join(" | "),
+    },
   ],
 };
 

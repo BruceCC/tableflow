@@ -8,6 +8,8 @@ export type TemplateColumn = {
   description?: string;
   required?: boolean;
   suggested_mappings?: string[];
+  multiple?: boolean;
+  combiner?: (values: string[]) => string;
 };
 
 export type UploadColumn = {

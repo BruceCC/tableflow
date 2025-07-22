@@ -221,6 +221,14 @@
     .requiredMark {
       color: var(--color-text-error);
     }
+    .multipleMark {
+      color: var(--color-text-soft);
+      font-size: var(--font-size-s);
+      background-color: var(--color-background-menu-hover);
+      padding: var(--m-xxxxs) var(--m-xxxs);
+      border-radius: var(--border-radius-1);
+      margin-left: var(--m-xxxs);
+    }
   }
 }
 

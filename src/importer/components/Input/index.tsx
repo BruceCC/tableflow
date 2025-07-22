@@ -123,6 +123,7 @@ function Select({ options = {}, placeholder, ...props }: InputProps) {
                 onClick={onChangeOption}
                 autoFocus={i === 0}>
                 {k} {options[k].required && <span className={style.requiredMark}>*</span>}
+                {options[k].multiple && <span className={style.multipleMark}>Multiple</span>}
               </button>
             ))}
           </div>

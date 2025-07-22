@@ -5,6 +5,7 @@ export type TemplateColumnMapping = {
   key: string;
   include: boolean;
   selected?: boolean;
+  isMultiple?: boolean;
 };
 
 export type MapColumnsProps = {

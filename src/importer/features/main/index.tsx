@@ -209,29 +209,50 @@ export default function Main(props: CSVImporterProps) {
               };
               const startIndex = (selectedHeaderRow || 0) + 1;
 
+              // Default combiner for multiple column values
+              const defaultCombiner = (values: string[]) => values.filter(v => v && v.trim()).join(" ");
+
               const mappedRows: MappedRow[] = [];
               data.rows.slice(startIndex).forEach((row: FileRow) => {
                 const resultingRow: MappedRow = {
                   index: row.index - startIndex,
                   values: {},
                 };
+                
+                // First pass: collect all values for each template key
+                const templateValues: { [templateKey: string]: string[] } = {};
                 row.values.forEach((value: string, valueIndex: number) => {
                   const mapping = columnMapping[valueIndex];
                   if (mapping && mapping.include) {
-                    resultingRow.values[mapping.key] = value;
+                    if (!templateValues[mapping.key]) {
+                      templateValues[mapping.key] = [];
+                    }
+                    templateValues[mapping.key].push(value);
                   }
                 });
+                
+                // Second pass: apply combiners and set final values
+                Object.entries(templateValues).forEach(([templateKey, values]) => {
+                  const templateColumn = parsedTemplate.columns.find(tc => tc.key === templateKey);
+                  const combiner = templateColumn?.combiner || defaultCombiner;
+                  resultingRow.values[templateKey] = combiner(values);
+                });
+                
                 mappedRows.push(resultingRow);
               });
 
               const includedColumns = Object.values(columnMapping).filter(({ include }) => include);
+              
+              // Get unique template columns (avoid duplicates from multi-mapping)
+              const uniqueTemplateKeys = Array.from(new Set(includedColumns.map(({ key }) => key)));
+              const uniqueColumns = uniqueTemplateKeys.map(key => ({ key, name: key }));
 
               const onCompleteData = {
                 num_rows: mappedRows.length,
-                num_columns: includedColumns.length,
+                num_columns: uniqueColumns.length,
                 error: null,
                 // TODO (client-sdk): Either remove "name" or change it to the be the name of the original upload column
-                columns: includedColumns.map(({ key }) => ({ key, name: key })),
+                columns: uniqueColumns,
                 rows: mappedRows,
               };
 

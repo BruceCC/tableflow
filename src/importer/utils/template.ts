@@ -32,6 +32,8 @@ export function convertRawTemplate(rawTemplate?: Record<string, unknown> | strin
     const description: string = item.description || "";
     const required: boolean = item.required || false;
     let suggestedMappings: string[] = item.suggested_mappings || [];
+    const multiple: boolean = item.multiple || false;
+    const combiner = item.combiner;
 
     if (name === "") {
       return [null, `Invalid template: The parameter "name" is required for each column (check column ${i})`];
@@ -41,6 +43,10 @@ export function convertRawTemplate(rawTemplate?: Record<string, unknown> | strin
     }
     if (seenKeys[key]) {
       return [null, `Invalid template: Duplicate keys are not allowed (check column ${i})`];
+    }
+    
+    if (combiner && typeof combiner !== "function") {
+      return [null, `Invalid template: The parameter "combiner" must be a function (check column ${i})`];
     }
 
     seenKeys[key] = true;
@@ -63,6 +69,8 @@ export function convertRawTemplate(rawTemplate?: Record<string, unknown> | strin
       description,
       required,
       suggested_mappings: suggestedMappings,
+      multiple,
+      combiner,
     } as TemplateColumn);
   }
 
