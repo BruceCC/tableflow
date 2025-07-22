@@ -171,6 +171,13 @@ template={{
       name: "Age",
       data_type: "number",
     },
+    {
+      name: "Category",
+      // `multiple` allows multiple source columns to be mapped to a single destination column
+      multiple: true,
+      // `combiner` is the function used to combine the values from multiple source columns; defaults to joining with a space
+      combiner: (values: string[]) => values.join(' | '),
+    }
   ],
 }}
 ```
@@ -233,7 +240,7 @@ Toggle between dark mode (`true`) and light mode (`false`).
 Specifies the primary color for the importer in hex format. Use `customStyles` to customize the UI in more detail.
 
 ```jsx
-primaryColor="#7A5EF8"
+primaryColor = "#7A5EF8";
 ```
 
 ### customStyles (_object_)
@@ -271,6 +278,7 @@ customStyles={{
 ## Internationalization
 
 ### Predefined languages
+
 - Out-of-the-box support for various languages.
 - Common languages are available through the language prop (i.e., `language="fr"` for French).
 - Available predefined languages:
@@ -279,6 +287,7 @@ customStyles={{
   - fr
 
 ### Customizable language
+
 - Language keys can be exported and overridden.
 - Labels and messages can be customized to any text.
 - Translations key examples can be found in `src/i18n/es.ts`
@@ -317,31 +326,36 @@ When set to `true`, the importer will not display and skip the Header Row Select
 To set up the project locally, follow these steps:
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/tableflowhq/csv-import.git
 cd csv-import
 ```
 
 2. **Install dependencies**
+
 ```bash
 yarn install
 ```
 
 3. **Build the project**
+
 ```bash
 yarn build
 ```
 
 ### Running Storybook
+
 To run Storybook locally, follow these steps:
 
 1. **Start Storybook**
+
 ```bash
 yarn storybook
 ```
 
 2. **Open Storybook in your browser:**
-Storybook should automatically open in your default browser. If it doesn't, navigate to [http://localhost:6006](http://localhost:6006).
+   Storybook should automatically open in your default browser. If it doesn't, navigate to [http://localhost:6006](http://localhost:6006).
 
 ### Modifying the project and testing with the demo app
 
