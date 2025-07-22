@@ -223,11 +223,11 @@
     }
     .multipleMark {
       color: var(--color-text-soft);
-      font-size: 0.75em;
+      font-size: var(--font-size-s);
       background-color: var(--color-background-menu-hover);
-      padding: 1px 4px;
+      padding: var(--m-xxxxs) var(--m-xxxs);
       border-radius: var(--border-radius-1);
-      margin-left: 4px;
+      margin-left: var(--m-xxxs);
     }
   }
 }
